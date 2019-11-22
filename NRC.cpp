@@ -47,7 +47,7 @@ NRC::NRC(const string port, void (*handle_process_loop)(NRC*)) //server
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE; // use my IP
 
-    if ((rv = getaddrinfo(NULL, port, &hints, &serv)) != 0) {
+    if ((rv = getaddrinfo(NULL, port.c_str(), &hints, &serv)) != 0) {
         cerr  << "getaddrinfo: " << gai_strerror(rv) << endl;
         exit(0);
     }

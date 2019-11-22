@@ -14,7 +14,9 @@ public:
 
 	NRC (string port);
 
-	
+	NRC(int fd);
+
+	NRC(const string port, void (*handle_process_loop)(NRC*));
 
 	~NRC();
 	/* Destructor of the local copy of the bus. By default, the Server Side deletes any IPC 

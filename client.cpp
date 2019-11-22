@@ -116,8 +116,12 @@ int main(int argc, char *argv[])
     
     string f = "";
 
+    // for host name and port number
+    string name = ""; // host name
+    string port; // port number
+
     int opt;
-    while((opt = getopt(argc, argv, "n:p:w:b:f:")) != -1)  
+    while((opt = getopt(argc, argv, "n:p:w:b:f:h:r:")) != -1)  
     {  
         switch(opt)
         {
@@ -151,18 +155,30 @@ int main(int argc, char *argv[])
                     }
                 }
                 break;
+            case 'h':
+                if(optarg)
+                {
+                    name = optarg;
+                }
+                break;
+            case 'r':
+                if(optarg)
+                {
+                    port = optarg;
+                }
+                break;
             default:
                 abort();
         }
     }
     
-    int pid = fork();
-    if (pid == 0){
-		// modify this to pass along m
-        execl ("dataserver", "dataserver", (char *)NULL);
+    // int pid = fork();
+    // if (pid == 0){
+	// 	// modify this to pass along m
+    //     execl ("dataserver", "dataserver", (char *)NULL);
         
-    }
-    
+    // }
+
     BoundedBuffer request_buffer(b);
 	HistogramCollection hc; // pass into worker function
 	
@@ -229,6 +245,7 @@ int main(int argc, char *argv[])
 
     if(f != "")
     {
+        NRC* chan = new NRC(name, port);
         // prepare request array to be sent to server for FileSize
         string fileName = f;
 
@@ -244,6 +261,11 @@ int main(int argc, char *argv[])
 
         char* resp = chan->cread();
         __int64_t size = *(__int64_t*)resp;
+
+        MESSAGE_TYPE q = QUIT_MSG;
+        chan->cwrite ((char *) &q, sizeof (MESSAGE_TYPE));
+        cout << "All Done!!!" << endl;
+        delete chan;
 
         // --------- create threads ----------
 
@@ -279,7 +301,6 @@ int main(int argc, char *argv[])
     }
 
 // ------------------------------
-
     gettimeofday (&end, 0);
 	hc.print ();
     int secs = (end.tv_sec * 1e6 + end.tv_usec - start.tv_sec * 1e6 - start.tv_usec)/(int) 1e6;

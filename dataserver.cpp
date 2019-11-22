@@ -129,6 +129,26 @@ void handle_process_loop(NRC *channel)
 
 int main(int argc, char *argv[])
 {
+
+	// // for host name and port number
+    string port; // port number
+	
+    int opt;
+    while((opt = getopt(argc, argv, "r:")) != -1)  
+    {  
+        switch(opt)
+        {
+            case 'r':
+                if(optarg)
+                {
+                    port = optarg;
+                }
+				break;
+			default:
+				abort();
+        }
+    }
+
 	srand(time_t(NULL));
 	bufsize = MAX_MESSAGE; // modify this to accept bufsize m from the client side
 	
@@ -136,7 +156,6 @@ int main(int argc, char *argv[])
 		populate_file_data(i+1);
 	}
 	
-	// do getopt to receive port number from user
 	NRC* control_channel = new NRC (port, handle_process_loop);
 	//handle_process_loop(control_channel);
 	delete control_channel;
